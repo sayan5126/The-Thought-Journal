@@ -1,11 +1,39 @@
-import { useState } from 'react'
-
+import { useState, useEffect } from 'react'
+import { useDispatch } from 'react-redux'
+import { authService } from './appwrite/authService'
+import { login, logout } from './store/authSlice'
+import { Footer, Header } from './components'
 function App() {
-  console.log(import.meta.env.VITE_APPWRITE_URL)
-  return (
+  const [loading, setLoading] = useState(true)
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    authService.getCurrentUser()
+      .then((userData) => {
+        if (userData) {
+          dispatch(login({ userData }))
+        } else {
+          dispatch(logout())
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to get current user:", error);
+        dispatch(logout())
+      })
+      .finally(() => setLoading(false))
+  }, [])
+
+  return loading ? (
     <>
-      <div className='text-center bg-gray-500 text-white text-3xl' >Sayan Dan</div>
-      <div className='text-center bg-gray-700 text-white text-2xl'>Let,s create a blog wedsite</div>
+      <Header />
+      <div>Loading...</div>
+      <Footer />
+    </>
+  ) : (
+    <>
+      <Header />
+      <h1>App Loaded</h1>
+      <Footer />
     </>
   )
 }
