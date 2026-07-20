@@ -26,3 +26,5 @@ function EditPost(){
         </div>: null
     )
 }
+
+export default EditPost;
